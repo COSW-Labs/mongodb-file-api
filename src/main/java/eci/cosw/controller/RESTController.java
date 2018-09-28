@@ -49,8 +49,8 @@ public class RESTController {
     @PostMapping("/files")
     public String handleFileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) throws IOException {
 
-        //TODO implement method
-        return null;
+        
+        return getFileByName(file.getName()).getBody().getURL().toString();
     }
 
     @CrossOrigin("*")
