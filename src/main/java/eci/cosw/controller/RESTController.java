@@ -28,7 +28,10 @@ public class RESTController {
 
     @Autowired
     GridFsTemplate gridFsTemplate;
-
+    
+    @Autowired
+    TodoRepository todoRepository;
+    
     @Autowired
     TodoServiceImpl todoService;
     
