@@ -2,6 +2,7 @@ package eci.cosw.controller;
 
 
 import com.mongodb.client.gridfs.model.GridFSFile;
+//import com.mongodb.gridfs.GridFSFile;
 import eci.cosw.data.TodoRepository;
 import eci.cosw.data.model.Todo;
 import org.springframework.core.io.InputStreamResource;
@@ -23,10 +24,10 @@ import org.springframework.http.MediaType;
 @RequestMapping("api")
 @RestController
 public class RESTController {
-    
+
     @Autowired
     GridFsTemplate gridFsTemplate;
-    
+
     @Autowired
     TodoRepository todoRepository;
 
@@ -34,10 +35,16 @@ public class RESTController {
     public ResponseEntity<InputStreamResource> getFileByName(@PathVariable String filename) throws IOException {
 
         GridFSFile file = gridFsTemplate.findOne(new Query().addCriteria(Criteria.where("filename").is(filename)));
+        System.out.println("------------->Nombre de Archivo: " +filename);
+        System.out.println("------------->Archivo: " +file.getFilename());
+        System.out.println("------------->Metadata de Archivo: " +file.getMetadata());
         if (file == null) {
+            System.out.println("------------->File es null");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
+            System.out.println("------------->Entra al segundo condicional");
             GridFsResource resource = gridFsTemplate.getResource(file.getFilename());
+            System.out.println("------------->Obtiene el recurso");
             return ResponseEntity.ok()
                 .contentType(MediaType.valueOf(resource.getContentType()))
                 .body(new InputStreamResource(resource.getInputStream()));
@@ -48,9 +55,8 @@ public class RESTController {
     @CrossOrigin("*")
     @PostMapping("/files")
     public String handleFileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) throws IOException {
-
-        
-        return getFileByName(file.getName()).getBody().getURL().toString();
+        gridFsTemplate.store(file.getInputStream(), file.getOriginalFilename(), file.getContentType());
+        return null;
     }
 
     @CrossOrigin("*")

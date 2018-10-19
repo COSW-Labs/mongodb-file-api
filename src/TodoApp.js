@@ -8,6 +8,7 @@ import Button from "@material-ui/core/Button";
 import AddIcon from '@material-ui/icons/Add';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
+import axios from 'axios';
 
 export class TodoApp extends React.Component {
 
@@ -18,6 +19,7 @@ export class TodoApp extends React.Component {
         this.handlePriorityChange = this.handlePriorityChange.bind(this);
         this.handleDateChange = this.handleDateChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this);
     }
 
     render() {
@@ -106,7 +108,24 @@ export class TodoApp extends React.Component {
         });
     }
 
+    handleInputChange(e) {
+            this.setState({
+                file: e.target.files[0]
+            });
+        }
+
     handleSubmit(e) {
+
+        let data = new FormData();
+        data.append('file', this.state.file);
+
+        axios.post('http://localhost:8080/api/files', data)
+            .then(function (response) {
+                console.log("file uploaded!", data);
+        })
+        .catch(function (error) {
+            console.log("failed file upload", error);
+        });
 
         e.preventDefault();
         if (!this.state.text.length || !this.state.priority.length || !this.state.dueDate)
